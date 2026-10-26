@@ -271,7 +271,7 @@ def build_err_msg(arrays, err_msg, header='Items are not equal:',
                 r = r_func(a)
             except Exception as exc:
                 r = f'[repr failed for <{type(a).__name__}>: {exc}]'
-            if r.count('\n') > 3:
+            if not isinstance(a, ndarray) and r.count('\n') > 3:
                 r = '\n'.join(r.splitlines()[:3])
                 r += '...'
             msg.append(f' {names[i]}: {r}')

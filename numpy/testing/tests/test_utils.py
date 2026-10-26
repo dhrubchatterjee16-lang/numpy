@@ -401,6 +401,27 @@ class TestBuildErrorMessage:
              '1.000000002, 2.00003    , 3.00004    ])')
         assert_equal(a, b)
 
+    def test_build_err_msg_multiline_array(self):
+        # Arrays spanning more than 3 lines should not be truncated by
+        # build_err_msg; truncation should follow array_repr (gh-27494).
+        x = np.arange(20).reshape(4, 5)
+        y = np.arange(20).reshape(4, 5)
+        msg = build_err_msg([x, y], 'test')
+        assert '...' not in msg
+        assert '[15, 16, 17, 18, 19]' in msg
+
+    def test_build_err_msg_multiline_non_array(self):
+        # Non-array objects with more than 3 lines in repr should still be truncated
+        class MultiLine:
+            def __repr__(self):
+                return 'line0\nline1\nline2\nline3\nline4'
+
+        obj = MultiLine()
+        msg = build_err_msg([obj, obj], 'test')
+        assert 'line0' in msg
+        assert 'line2...' in msg
+        assert 'line4' not in msg
+
 
 class TestEqual(TestArrayEqual):
 
